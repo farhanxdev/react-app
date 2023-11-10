@@ -29,11 +29,25 @@ function getData(key) {
     return localStorage.getItem(key)
 }
 
+
+function getproductlist() {
+    const PRODUCTS=[
+
+        {id:1,name:'condom',image:'/penthar.png',price:10},
+        {id:2,name:'massage oil',image:'/massage oil.jpeg',price:20},
+        {id:2,name:'handcuffs',image:'/handcuffs.webp',price:20},
+
+
+    ]
+    return PRODUCTS;
+}
+
 const Server = {
     signup,
     login,
     saveData,
     getData,
+    getproductlist,
 };
 
 export default Server;

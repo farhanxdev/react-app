@@ -1,152 +1,103 @@
-import React, { useEffect, useState } from 'react';
-import Server from './server';
+import { useState } from "react";
+import Server from "./server";
 
-function Signup({ updatestate }) {
 
-    function userSignup() {
-        var username = document.getElementById('username').value
-        var password = document.getElementById('password').value
-        var name = document.getElementById('name').value
-        var passport = document.getElementById('passport').value
-        var signup = Server.signup(username, password, name, passport)
-        if (signup == true) {
-            updatestate(1);
-        }
+
+
+const ProductCard = (product, add) => {
+    function addchart() {
+        add(product)
     }
-
-
-
-
     return (
-        <div >
-            <div>signup</div>
-            <div>username</div>
-            <input id='username'></input>
-            <div>password</div>
-            <input id='password'></input>
-            <div>name</div>
-            <input id='name'></input>
-            <div>passport number</div>
-            <input id='passport'></input>
-            <button onClick={userSignup}>signup</button>
+        <div>
+            <div>{product.name}</div>
+            <img src={product.image} style={{ height: 200, width: 200 }}></img>
+            <div> price  {product.price}</div>
+            <button onClick={addchart}>add to card</button>
+
+
         </div>
-
-    );
+    )
 }
-function Login({ updatestate }) {
-    function login() {
-        var username = document.getElementById('username').value
-        var password = document.getElementById('password').value
-        var login = Server.login(username, password)
 
-        if (login != undefined) {
-            updatestate(login)
+const ProductCard2 = (product) => {
+    return (
+        <div>
+            <div>{product.name}</div>
+            <img src={product.image} style={{ height: 200, width: 200 }}></img>
+            <div> quantity:  {product.quantity}</div>
+            <div> price:  {product.price * product.quantity}</div>
 
-        }
-    }
 
-    function signupPage() {
-        updatestate(0);
+        </div>
+    )
+}
+function Viewcart({ cart }) {
+    var totalprice=0
+    for (let index = 0; index < cart.length; index++) {
+        const product = cart[index];
+        totalprice = totalprice + (product.price * product.quantity)
+        
     }
 
     return (
         <div>
-            <div>login</div>
-            <div>username</div>
-            <input id='username'></input>
-            <div>password</div>
-            <input id='password'></input>
-            <button onClick={login} >login</button><br />
-            <button onClick={signupPage} >Don't have account? Create one.</button>
+            <div>{cart.map((p) => ProductCard2(p))}</div>
+            <div> Total price:{totalprice}</div>
         </div>
+
     );
 }
 
-function EditConatiner({ keyName }) {
-    const [value, updateValue] = useState('');
-    const [edit, setEdit] = useState(false);
-    function saveName() {
-        Server.saveData(keyName, value)
-        setEdit(false);
-    }
 
-    useEffect(() => {
-        console.log(keyName);
-        var dataFromServer = Server.getData(keyName)
-        if (dataFromServer != null) {
-            updateValue(dataFromServer);
-        }
-    }, []);
-
-    return (
-        <div>
-            {edit ? 
-            <div><input value={value} onChange={e => updateValue(e.target.value)}></input><button onClick={saveName}>Save</button></div>
-            : <div>{value}{' '}<button onClick={() => setEdit(true)}>Edit</button></div>}
-        </div>
-    );
-    // if (edit)
-    //     return (<div><input value={value} onChange={e => updateValue(e.target.value)}></input><button onClick={saveName}>Save</button></div>)
-    // else return (<div>{value}{' '}<button onClick={() => setEdit(true)}>Edit</button></div>);
-}
 
 function App() {
+    const [cart, setCart] = useState([]);
+    const [viewcart, setviewCart] = useState(false);
+    function addToCart(product) {
+        var productList = [...cart];
+        var found = false;
+        for (let index = 0; index < productList.length; index++) {
+            const product2 = productList[index];
+            if (product2.id == product.id) {
+                product2.quantity = product2.quantity + 1;
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            product.quantity = 1;
+            productList = [...productList, product];
+        }
+        setCart(productList)
+    }
 
-    const [userState, setuserstate] = useState(1);
+    var productList = Server.getproductlist()
+    function dhukeja() {
+        setviewCart(true);
+    }
 
-
-    if (userState == 0) {
+    if (viewcart) {
         return (
-            <Signup updatestate={setuserstate} />
+            <Viewcart cart={cart} />
         )
 
     }
-    else if (userState == 1) {
-        return (
-            <Login updatestate={setuserstate} />
-        )
-    }
+
     else {
+
         return (
-            <div style={{}}>
-
-                <div style={{ display: 'flex', textAlign: 'center', backgroundColor: '#181616', color: 'white', padding: 10 }}>
-                    <div style={{ flex: 1 }}> [ABOUT ME]</div>
-                    <div style={{ flex: 1 }}>[SERVICES]</div>
-                    <div style={{ flex: 1 }}>[CONTACT]</div>
-                </div>
-                <div >
-                    <div style={{ textAlign: 'center', borderBottom: 'solid 2px', fontSize: 30 }}>My Biography</div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                        <div>NAME</div>
-                        <EditConatiner keyName={userState.username + 'name'} />
-                        <div>AGE</div>
-                        <EditConatiner keyName={userState.username + 'age'} />
-                        <div>BIRTHDAY</div>
-                        <EditConatiner keyName={userState.username + 'dob'} />
-                        <div>ADDRESS</div>
-                        <EditConatiner keyName={userState.username + 'address'} />
-                        <div>EMAIL</div>
-                        <EditConatiner keyName={userState.username + 'email'} />
-                        <div>PHONE</div>
-                        <EditConatiner keyName={userState.username + 'phone'} />
-                        <div>TWITTER</div>
-                        <EditConatiner keyName={userState.username + 'twitter'} />
-                    </div>
-                </div>
-
-
-
-
-
-
-
+            <div>
+                <div>{cart.length}</div>
+                <button onClick={dhukeja}>view cart</button>
+                {productList.map((p) => ProductCard(p, addToCart))}
             </div>
-
         )
     }
-
-
 }
 export default App;
+
+
+
+
 
