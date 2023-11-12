@@ -4,16 +4,21 @@ import Server from "./server";
 
 
 
-const ProductCard = (product, add) => {
+const ProductCard = (product, add,buy,) => {
     function addchart() {
         add(product)
     }
+    function buynow() {
+        buy(product)
+    }
+
     return (
         <div>
             <div>{product.name}</div>
             <img src={product.image} style={{ height: 200, width: 200 }}></img>
             <div> price  {product.price}</div>
             <button onClick={addchart}>add to card</button>
+            <button onClick={buynow}>Buy Now</button>
 
 
         </div>
@@ -33,11 +38,11 @@ const ProductCard2 = (product) => {
     )
 }
 function Viewcart({ cart }) {
-    var totalprice=0
+    var totalprice = 0
     for (let index = 0; index < cart.length; index++) {
         const product = cart[index];
         totalprice = totalprice + (product.price * product.quantity)
-        
+
     }
 
     return (
@@ -49,11 +54,46 @@ function Viewcart({ cart }) {
     );
 }
 
+function Buynow({ product,placeo }) {
+
+    function placeorder() {
+        placeo(product)
+    }
+   
+    return(
+       
+    <div>
+        <div>{product.name}</div>
+        <img src={product.image} style={{ height: 200, width: 200 }}></img>
+        <div> price  {product.price}</div>
+        <button onClick={placeorder}>place order</button>
+    </div>
+    )
+}
+function Placeorder() {
+    return(
+      <div>
+
+          
+          <div>f</div>
+      </div>
+    )   
+}
+
 
 
 function App() {
     const [cart, setCart] = useState([]);
     const [viewcart, setviewCart] = useState(false);
+    const [buynow, setbuynow] =useState(undefined);
+    const [order, setorder] =useState(undefined);
+    function place(product) {
+        setorder(product)
+
+    }
+    function buynowfn(product) {
+        setbuynow(product)
+    }
     function addToCart(product) {
         var productList = [...cart];
         var found = false;
@@ -83,6 +123,17 @@ function App() {
         )
 
     }
+    else if (order) {
+        return(
+
+            <Placeorder product={order}/>
+        )
+    }
+    else if (buynow) {
+       return(
+        <Buynow  product ={buynow} placeo={place} />
+       ) 
+    }
 
     else {
 
@@ -90,7 +141,7 @@ function App() {
             <div>
                 <div>{cart.length}</div>
                 <button onClick={dhukeja}>view cart</button>
-                {productList.map((p) => ProductCard(p, addToCart))}
+                {productList.map((p) => ProductCard(p, addToCart,buynowfn,place))}
             </div>
         )
     }
